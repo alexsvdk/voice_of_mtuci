@@ -16,8 +16,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      builder: (context, child) =>
-          ProviderScope(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => ProviderScope(
+        child: child ?? const SizedBox.shrink(),
+      ),
       home: const MainScreen(),
     );
   }
