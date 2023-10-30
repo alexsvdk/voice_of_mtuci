@@ -30,7 +30,7 @@ class RecordManager {
   final PermissionManager _permissionManager;
   final MyApi _api;
 
-  final Record _audioRecorder = Record();
+  final _audioRecorder = AudioRecorder();
 
   RecordManager(
     this._statusController,
@@ -106,12 +106,15 @@ class RecordManager {
 
   Future<void> _restartRec() async {
     recId++;
-    final filepath = _recDir.path + '/$recId.rn';
+    final filepath = '${_recDir.path}/$recId.rn';
     _recFile = File(filepath);
     startTime = DateTime.now();
     _leastTriggered = null;
     _triggered = null;
-    await _audioRecorder.start(path: filepath);
+    await _audioRecorder.start(
+      const RecordConfig(),
+      path: filepath,
+    );
   }
 
   Future<void> _postRec(File recFile, double startSec, double endSec) async {
@@ -124,10 +127,10 @@ class RecordManager {
     }
     if (kDebugMode) {
       FlutterShare.shareFile(
-      title: 'Example share',
-      text: 'Example share text',
-      filePath: recFile.absolute.path,
-    );
+        title: 'Example share',
+        text: 'Example share text',
+        filePath: recFile.absolute.path,
+      );
     }
     _trimmerCompleter?.complete();
     _trimmerCompleter = null;
