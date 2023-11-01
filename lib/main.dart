@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:voice_of_mtuci/main_screen.dart';
+
+import 'src/pages/recorder/recorder_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => ProviderScope(
         child: child ?? const SizedBox.shrink(),
       ),
-      home: const MainScreen(),
+      home: const RecorderScreen(),
     );
   }
 }
