@@ -41,13 +41,52 @@ class RecorderManager {
     _ongoingRecordProvider.recordStarted(
       RecordEntity(
         startAt: startAt,
+        resumeAt: startAt,
         fileName: filePath,
+        durationBeforeLastResume: Duration.zero,
       ),
     );
 
     await _audioRecorder.start(
       const RecordConfig(),
       path: filePath,
+    );
+
+    _recorderStateController.state = RecorderState.active;
+  }
+
+  Future<void> pause() async {
+    _recorderStateController.state = RecorderState.loading;
+    await _audioRecorder.pause();
+
+    final ongoingRecord = _ongoingRecordProvider.ongoingRecord;
+
+    if (ongoingRecord == null) {
+      _recorderStateController.state = RecorderState.paused;
+      return;
+    }
+
+    _ongoingRecordProvider.recordPaused(ongoingRecord.copyWith(
+      pauseReason: PauseReason.user,
+      durationBeforeLastResume: ongoingRecord.totalDuration,
+    ));
+
+    _recorderStateController.state = RecorderState.paused;
+  }
+
+  Future<void> resume() async {
+    _recorderStateController.state = RecorderState.loading;
+    await _audioRecorder.resume();
+
+    final ongoingRecord = _ongoingRecordProvider.ongoingRecord;
+
+    if (ongoingRecord == null) {
+      _recorderStateController.state = RecorderState.active;
+      return;
+    }
+
+    _ongoingRecordProvider.recordResumed(
+      ongoingRecord.resumeCopyWith().copyWith(resumeAt: DateTime.now()),
     );
 
     _recorderStateController.state = RecorderState.active;

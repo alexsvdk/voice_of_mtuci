@@ -38,6 +38,7 @@ class RecorderScreen extends ConsumerWidget {
                         return const NeedPermissions();
                       case RecorderState.inactive:
                         return const InactiveRecord();
+                      case RecorderState.paused:
                       case RecorderState.active:
                         return const ActiveRecord();
                       case RecorderState.loading:

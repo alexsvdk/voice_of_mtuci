@@ -22,6 +22,20 @@ class OngoingRecordProvider {
     _streamController?.add(recordEntity);
   }
 
+  void recordPaused(RecordEntity recordEntity) {
+    assert(recordEntity.isPaused == true);
+
+    _recordEntity = recordEntity;
+    _streamController?.add(recordEntity);
+  }
+
+  void recordResumed(RecordEntity recordEntity) {
+    assert(recordEntity.isPaused == false);
+
+    _recordEntity = recordEntity;
+    _streamController?.add(recordEntity);
+  }
+
   void recordEnd() {
     assert(_recordEntity != null);
 

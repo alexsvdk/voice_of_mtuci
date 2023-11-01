@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:voice_of_mtuci/src/features/recorder/entities/record_entity.dart';
 
 class RecordTime extends ConsumerStatefulWidget {
-  final DateTime startAt;
+  final RecordEntity recordEntity;
 
   const RecordTime({
     super.key,
-    required this.startAt,
+    required this.recordEntity,
   });
 
   @override
@@ -17,6 +18,8 @@ class RecordTime extends ConsumerStatefulWidget {
 
 class _RecordTimeState extends ConsumerState<RecordTime> {
   late final Timer timer;
+
+
 
   @override
   void initState() {
@@ -37,7 +40,7 @@ class _RecordTimeState extends ConsumerState<RecordTime> {
 
   @override
   Widget build(BuildContext context) {
-    final diff = DateTime.now().difference(widget.startAt);
+    final diff = widget.recordEntity.totalDuration;
     final inMinutes = diff.inMinutes;
     final inSeconds = diff.inSeconds - inMinutes * 60;
     return Text(
