@@ -9,17 +9,12 @@ class InactiveRecord extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        TextButton(
-          style: kButtonStyle,
-          child: const Text('Начать прослушку'),
-          onPressed: () {
-            ref.read(recorderManagerProvider).start();
-          },
-        ),
-      ],
+    return TextButton(
+      style: kButtonStyle,
+      child: const Text('Начать прослушку'),
+      onPressed: () {
+        ref.read(recorderManagerProvider).start();
+      },
     );
   }
 }

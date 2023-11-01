@@ -16,40 +16,63 @@ class RecorderScreen extends ConsumerWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                'МТУСИ.Прослушка',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: double.infinity),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 8),
+                      const Text(
+                        'МТУСИ.Прослушка',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 100),
+                      Center(
+                        child: Builder(
+                          builder: (context) {
+                            switch (recordEntity) {
+                              case RecorderState.permissionRequired:
+                                return const NeedPermissions();
+                              case RecorderState.inactive:
+                                return const InactiveRecord();
+                              case RecorderState.paused:
+                              case RecorderState.active:
+                                return const ActiveRecord();
+                              case RecorderState.loading:
+                                return const CircularProgressIndicator();
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 100),
+                      const Text('by @a1exs & @webmadness'),
+                      const SizedBox(height: 8),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Записи',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Center(
-                child: Builder(
-                  builder: (context) {
-                    switch (recordEntity) {
-                      case RecorderState.permissionRequired:
-                        return const NeedPermissions();
-                      case RecorderState.inactive:
-                        return const InactiveRecord();
-                      case RecorderState.paused:
-                      case RecorderState.active:
-                        return const ActiveRecord();
-                      case RecorderState.loading:
-                        return const CircularProgressIndicator();
-                    }
-                  },
-                ),
-              ),
-              const Text('by @a1exs & @webmadness'),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
