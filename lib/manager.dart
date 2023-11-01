@@ -3,13 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:flutter_share/flutter_share.dart';
 import 'package:record/record.dart';
 import 'package:voice_of_mtuci/api.dart';
-import 'package:voice_of_mtuci/const.dart';
 
 import 'permission_manager.dart';
 
@@ -30,7 +27,7 @@ class RecordManager {
   final PermissionManager _permissionManager;
   final MyApi _api;
 
-  final Record _audioRecorder = Record();
+  final _audioRecorder = AudioRecorder();
 
   RecordManager(
     this._statusController,
@@ -73,6 +70,7 @@ class RecordManager {
       if (startTime == null) {
         return;
       }
+
       final amp = await _audioRecorder.getAmplitude();
       final now = DateTime.now();
       if (amp.current > _ampThreshehold) {
@@ -80,24 +78,28 @@ class RecordManager {
             ? now.subtract(_triggerOffsetDuration)
             : startTime;
         _leastTriggered = now;
-      } else {
-        if (_triggered != null) {
-          if (now.difference(_leastTriggered!) > _triggerOffsetDuration) {
-            _audioRecorder.stop();
-            final recFile = _recFile;
-            final startSec =
-                _triggered!.difference(startTime!).inMilliseconds / 1000;
-            final endSec = now.difference(startTime!).inMilliseconds / 1000;
-            await _restartRec();
-            _postRec(recFile!, startSec, endSec);
-          }
-        } else {
-          if (now.difference(startTime!) > _silenceRestartDuratuionr) {
-            _audioRecorder.stop();
-            _recFile?.delete();
-            _restartRec();
-          }
+
+        return;
+      }
+
+      if (_triggered != null) {
+        if (now.difference(_leastTriggered!) > _triggerOffsetDuration) {
+          _audioRecorder.stop();
+          final recFile = _recFile;
+          final startSec =
+              _triggered!.difference(startTime!).inMilliseconds / 1000;
+          final endSec = now.difference(startTime!).inMilliseconds / 1000;
+          await _restartRec();
+          _postRec(recFile!, startSec, endSec);
         }
+
+        return;
+      }
+
+      if (now.difference(startTime!) > _silenceRestartDuratuionr) {
+        _audioRecorder.stop();
+        _recFile?.delete();
+        _restartRec();
       }
     } catch (e) {
       print(e);
@@ -106,12 +108,15 @@ class RecordManager {
 
   Future<void> _restartRec() async {
     recId++;
-    final filepath = _recDir.path + '/$recId.rn';
+    final filepath = '${_recDir.path}/$recId.rn';
     _recFile = File(filepath);
     startTime = DateTime.now();
     _leastTriggered = null;
     _triggered = null;
-    await _audioRecorder.start(path: filepath);
+    await _audioRecorder.start(
+      const RecordConfig(),
+      path: filepath,
+    );
   }
 
   Future<void> _postRec(File recFile, double startSec, double endSec) async {
@@ -123,11 +128,11 @@ class RecordManager {
       print(e);
     }
     if (kDebugMode) {
-      FlutterShare.shareFile(
-      title: 'Example share',
-      text: 'Example share text',
-      filePath: recFile.absolute.path,
-    );
+      // FlutterShare.shareFile(
+      //   title: 'Example share',
+      //   text: 'Example share text',
+      //   filePath: recFile.absolute.path,
+      // );
     }
     _trimmerCompleter?.complete();
     _trimmerCompleter = null;
