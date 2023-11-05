@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:voice_of_mtuci/src/features/recorder/di.dart';
 import 'package:voice_of_mtuci/src/features/recorder/entities/recorder_states.dart';
+import 'package:voice_of_mtuci/src/features/uploader/models/record_model.dart';
 import 'package:voice_of_mtuci/src/pages/recorder/widgets/inactive_record.dart';
 import 'package:voice_of_mtuci/src/pages/recorder/widgets/need_permissions.dart';
 
+import '../../features/uploader/di.dart';
 import 'widgets/active_record.dart';
 
 class RecorderScreen extends ConsumerWidget {
@@ -13,6 +15,8 @@ class RecorderScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recordEntity = ref.watch(recorderState);
+    final recordsProvider = ref.watch(recordsProviderProvider);
+    ref.watch(uploaderManagerProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -71,6 +75,32 @@ class RecorderScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+            ),
+            StreamBuilder<List<RecordModel>>(
+              stream: recordsProvider.recordsStream,
+              builder: (context, snapshot) {
+                final records = snapshot.data ?? [];
+
+                return SliverList.separated(
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final record = records[index];
+
+                    final duration =
+                        Duration(milliseconds: record.durationMills);
+                    final inMinutes = duration.inMinutes;
+                    final inSeconds = duration.inSeconds - inMinutes * 60;
+
+                    return ListTile(
+                      title: Text(record.filePath.split('/').last),
+                      trailing: Text(
+                        "${inMinutes.toString().padLeft(2, "0")}:${inSeconds.toString().padLeft(2, "0")}",
+                      ),
+                    );
+                  },
+                  itemCount: records.length,
+                );
+              },
             ),
           ],
         ),

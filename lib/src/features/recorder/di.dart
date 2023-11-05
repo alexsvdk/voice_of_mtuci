@@ -3,6 +3,7 @@ import 'package:record/record.dart';
 import 'package:voice_of_mtuci/src/features/recorder/entities/recorder_states.dart';
 import 'package:voice_of_mtuci/src/features/recorder/managers/recorder_manager.dart';
 import 'package:voice_of_mtuci/src/features/recorder/providers/ongoing_record_provider.dart';
+import 'package:voice_of_mtuci/src/features/uploader/di.dart';
 
 import '../permissions/di.dart';
 
@@ -17,11 +18,12 @@ final ongoingRecordProviderProvider = Provider<OngoingRecordProvider>(
   },
 );
 
-final recorderManagerProvider = Provider<RecorderManager>(
+final recorderManagerProvider = Provider(
   (ref) => RecorderManager(
     ref.read(permissionsManagerProvider),
     ref.read(ongoingRecordProviderProvider),
     AudioRecorder(),
     ref.read(recorderState.notifier),
+    ref.read(uploaderManagerProvider),
   ),
 );
