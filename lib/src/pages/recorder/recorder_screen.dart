@@ -16,7 +16,7 @@ class RecorderScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recordEntity = ref.watch(recorderState);
     final recordsProvider = ref.watch(recordsProviderProvider);
-    ref.watch(uploaderManagerProvider);
+    final uploaderManager = ref.watch(uploaderManagerProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -92,9 +92,16 @@ class RecorderScreen extends ConsumerWidget {
                     final inSeconds = duration.inSeconds - inMinutes * 60;
 
                     return ListTile(
-                      title: Text(record.filePath.split('/').last),
-                      trailing: Text(
+                      leading: Text(
                         "${inMinutes.toString().padLeft(2, "0")}:${inSeconds.toString().padLeft(2, "0")}",
+                      ),
+                      title: Text(record.filePath.split('/').last),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        splashRadius: 15,
+                        onPressed: () {
+                          uploaderManager.removeRecord(record);
+                        },
                       ),
                     );
                   },
