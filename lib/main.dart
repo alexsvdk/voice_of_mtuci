@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:voice_of_mtuci/providers.dart';
 
 import 'src/pages/recorder/recorder_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await ServiceModule.configure();
+
   runApp(const MyApp());
 }
 

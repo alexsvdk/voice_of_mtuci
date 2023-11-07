@@ -12,7 +12,7 @@ class InactiveRecord extends ConsumerWidget {
     return TextButton(
       style: kButtonStyle,
       child: const Text('Начать прослушку'),
-      onPressed: () {
+      onPressed: () async {
         ref.read(recorderManagerProvider).start();
       },
     );

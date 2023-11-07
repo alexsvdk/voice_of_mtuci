@@ -45,7 +45,7 @@ class OngoingRecordProvider {
   }
 
   init() {
-    _streamController = StreamController<RecordEntity?>();
+    _streamController = StreamController<RecordEntity?>.broadcast();
   }
 
   dispose() {
